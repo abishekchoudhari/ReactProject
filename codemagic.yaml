@@ -3,9 +3,7 @@ workflows:
     scripts: |
       - name: Build Android APK
         working_directory: android
-        chmod -R 777 $CM_BUILD_DIR
-        cd android
-        script: ./gradlew assembleRelease
+        script: chmod +w ./gradlew assembleRelease
     artifacts:
       - app/build/outputs/**/**/*.apk
     publishing:
