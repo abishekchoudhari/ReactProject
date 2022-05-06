@@ -1,9 +1,9 @@
 workflows:
   my-workflow:
-    scripts: |
+    scripts:
       - name: Build Android APK
         working_directory: android
-        script: chmod +w ./gradlew assembleRelease
+        script: ./gradlew assembleRelease
     artifacts:
       - app/build/outputs/**/**/*.apk
     publishing:
