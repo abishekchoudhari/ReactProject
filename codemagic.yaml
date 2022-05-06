@@ -1,0 +1,46 @@
+workflows:
+    react-native-android:
+        name: React Native Android
+        max_build_duration: 120
+        instance_type: mac_mini
+        environment:
+            groups:
+                - other
+            # Add the group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+            vars:
+                PACKAGE_NAME: "com.newproject" # <-- Put your package name here e.g. com.domain.myapp
+            node: latest
+        triggering:
+            events:
+                - push
+                - tag
+                - pull_request
+            branch_patterns:
+                - pattern: develop
+                  include: true
+                  source: true
+        scripts:
+            - name: Install npm dependencies
+              script: |
+                                npm install
+            - name: Set Android SDK location
+              script: |
+                                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"                            
+            - name: Build Android release
+              script: |
+                # Set environment variable so it can be used to increment build number in android/app/build.gradle
+                # Note that tracks can be specified when retrieving latest build number from Google Play, for example:
+                # export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks alpha) + 1))
+                export NEW_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME") + 1))
+                cd android && ./gradlew bundleRelease  # To generate an .apk use--> ./gradlew assembleRelease                
+        artifacts:
+            - android/app/build/outputs/**/*.aab
+            - android/app/build/outputs/**/*.apk
+        publishing:
+            # See the following link for details about email publishing - https://docs.codemagic.io/yaml-publishing/email
+            email:
+                recipients:
+                    - abishek.choudhari555@gmail.com
+                notify:
+                  success: true     # To not receive a notification when a build succeeds
+                  failure: false    # To not receive a notification when a build fails
