@@ -19,6 +19,10 @@ target 'NewProject' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+
+  pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
+
   target 'NewProjectTests' do
     inherit! :complete
     # Pods for testing
