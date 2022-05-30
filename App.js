@@ -48,6 +48,8 @@ import GeoLocationApp from './components/GeoLocationApp';
 import MapApp from './components/MapApp';
 import VideoApp from './components/VideoApp';
 import CustomAlertDialog from './components/CustomAlertDialog';
+import ApiCalls from './components/ApiCalls';
+import SqliteDb from './components/SqliteDb';
 //import Notifications from './Notifications';
 
 // import CameraRollApp from './components/CameraRollApp';
@@ -106,12 +108,35 @@ const App = () => {
         <Stack.Screen name="VideoApp" component={VideoApp} />
         {/* <Stack.Screen name="NotificationApp" component={Notifications} /> */}
         <Stack.Screen name="CustomAlertDialog" component={CustomAlertDialog} />
+        <Stack.Screen name="Apicall" component={ApiCalls} />
+        <Stack.Screen name="SqliteDb" component={SqliteDb} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
 const HomeScreen = ({navigation}) => {
+
+  useEffect(() => {
+    db.transaction(function (txn) {
+      txn.executeSql(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='table_user",
+        [],
+        function (tx, res) {
+          console.log('item: ', res.rows.length);
+
+          if (res.rows.length == 0) {
+            txn.executeSql('DROP TABLE IF EXISTS table_user', []);
+            txn.executeSql(
+              'CREATE TABLE IF NOT EXISTS table_user(user_id INTEGER PRIMARY KEY AUTOINCREMENT,user_name VARCHAR(20), user_contact INT(10), user_address VARCHAR(225))',
+              [],
+            );
+          }
+        },
+      );
+    });
+  }, []);
+
   return (
     <ScrollView>
       <View style={Styles.buttonView}>
@@ -317,6 +342,18 @@ const HomeScreen = ({navigation}) => {
         <Button
           title="Custom Alert Dialog App"
           onPress={() => navigation.navigate('CustomAlertDialog')}
+        />
+      </View>
+      <View style={Styles.buttonView}>
+        <Button
+          title="Api Calls"
+          onPress={() => navigation.navigate('Apicall')}
+        />
+      </View>
+      <View style={Styles.buttonView}>
+        <Button
+          title="Sqlite Database"
+          onPress={() => navigation.navigate('SqliteDb')}
         />
       </View>
     </ScrollView>
